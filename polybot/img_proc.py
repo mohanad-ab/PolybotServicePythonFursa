@@ -1,3 +1,4 @@
+import random
 from pathlib import Path
 from matplotlib.image import imread, imsave
 
@@ -52,16 +53,58 @@ class Img:
 
     def rotate(self):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # To implement: Rotate the image by 90 degrees clockwise
+        original_height = len(self.data)
+        original_width = len(self.data[0])
+
+        # Create a new list to hold the rotated image data
+        rotated_image = []
+
+        # Initialize the rotated_image with empty rows
+        for _ in range(original_width):
+            rotated_image.append([None] * original_height)
+
+        # Fill in the rotated_image by rotating the image 90 degrees clockwise
+        for i in range(original_height):
+            for j in range(original_width):
+                rotated_image[j][i] = self.data[original_height - 1 - i][j]
+        self.data = rotated_image
+
+
 
     def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # TODO: Implement salt and pepper noise addition instead of raising an exception
+        salt_probability = 0.15  # Adjust the salt probability as needed
+        pepper_probability = 0.15  # Adjust the pepper probability as needed
+
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                random_value = random.random()  # Generate a random number between 0 and 1
+                if random_value < salt_probability:
+                    self.data[i][j] = 255  # Introduce salt noise (white)
+                elif random_value > (1 - pepper_probability):
+                    self.data[i][j] = 0  # Introduce pepper noise (black)
+                # If not within the salt or pepper range, the pixel remains unchanged
+
+
 
     def concat(self, other_img, direction='horizontal'):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        if len(self.data) != len(other_img.data):
+            raise RuntimeError("Images do not have the same height and cannot be concatenated.")
+        concatenated_data = []
+        for i in range(len(self.data)):
+            concatenated_data.append(self.data[i] + other_img.data[i])
+        # Update self.data with the concatenated image
+        self.data = concatenated_data
 
     def segment(self):
         # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # Iterate over each row
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                # Replace pixel value based on intensity
+                if self.data[i][j] > 100:
+                    self.data[i][j] = 255  # White
+                else:
+                    self.data[i][j] = 0  # Black
