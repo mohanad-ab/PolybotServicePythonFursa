@@ -73,7 +73,6 @@ class Img:
 
 
     def salt_n_pepper(self):
-        # TODO: Implement salt and pepper noise addition instead of raising an exception
         salt_probability = 0.15  # Adjust the salt probability as needed
         pepper_probability = 0.15  # Adjust the pepper probability as needed
 
