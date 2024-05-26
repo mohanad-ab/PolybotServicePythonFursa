@@ -75,24 +75,24 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, access_token, chat_endpoint):
-        super().__init__(access_token, chat_endpoint)
-        # Store user states for concatenation
+    def __init__(self, token, telegram_chat_url):
+        super().__init__(token, telegram_chat_url)
+        # Dictionary to store user states for concatenation
         self.concat_state = {}
 
-    def handle_message(self, message):
-        logger.info(f'Incoming message: {message}')
+    def handle_message(self, msg):
+        logger.info(f'Incoming message: {msg}')
         try:
             # Check if the message contains a photo
-            if not self.is_current_msg_photo(message):
-                self.send_text(message['chat']['id'], 'Please upload a photo with a caption for processing.')
+            if not self.is_current_msg_photo(msg):
+                self.send_text(msg['chat']['id'], 'Please send a photo with a caption for processing.')
                 return
 
             # Download the user's photo
-            img_path = self.download_user_photo(message)
+            img_path = self.download_user_photo(msg)
 
             # Check if the user is in the process of concatenating images
-            user_id = message['from']['id']
+            user_id = msg['from']['id']
             if user_id in self.concat_state:
                 original_img_path = self.concat_state.pop(user_id)
                 self.process_concat_images(user_id, original_img_path, img_path)
@@ -100,9 +100,9 @@ class ImageProcessingBot(Bot):
 
             # Create an Img instance for the downloaded photo
             img = Img(img_path)
-
+            # i dont know why there is a problem pushing z
             # Process the image based on the caption
-            caption = message.get('caption', '').lower()
+            caption = msg.get('caption', '').lower()
             if caption == 'blur':
                 img.blur()
             elif caption == 'contour':
@@ -114,22 +114,23 @@ class ImageProcessingBot(Bot):
             elif caption == 'salt and pepper':
                 img.salt_n_pepper()
             elif caption == 'concat':
-                self.send_text(message['chat']['id'], 'Please send the second image to concatenate with the first one.')
+                self.send_text(msg['chat']['id'], 'Please send the second image to concatenate with the first one.')
                 self.concat_state[user_id] = img_path
                 return
             else:
-                self.send_text(message['chat']['id'], 'Sorry, the requested operation is not supported. Please try again with a different caption.')
+                self.send_text(msg['chat']['id'],
+                               'Unsupported caption. Please use one of: Blur, Contour, Rotate, Segment, Salt and pepper, Concat.')
                 return
 
             # Save the processed image
             processed_img_path = img.save_img()
 
             # Send the processed image back to the user
-            self.send_photo(message['chat']['id'], processed_img_path)
+            self.send_photo(msg['chat']['id'], processed_img_path)
 
         except Exception as e:
             logger.error(f"Error processing message: {e}")
-            self.send_text(message['chat']['id'], "Oops! Something went wrong. Please try again later.")
+            self.send_text(msg['chat']['id'], "Something went wrong... please try again.")
 
     def process_concat_images(self, user_id, original_img_path, second_img_path):
         try:
@@ -145,6 +146,6 @@ class ImageProcessingBot(Bot):
 
         except Exception as e:
             logger.error(f"Error concatenating images: {e}")
-            self.send_text(user_id, "Oops! Something went wrong while concatenating images. Please try again later.")
+            self.send_text(user_id, "Something went wrong while concatenating images... please try again.")
 
 
