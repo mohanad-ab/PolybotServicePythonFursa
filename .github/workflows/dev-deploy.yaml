@@ -25,4 +25,4 @@ jobs:
             source venv/bin/activate
             git pull origin dev
             sudo systemctl restart polybot.service
-          EOF
+            EOF
