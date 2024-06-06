@@ -85,7 +85,7 @@ class ImageProcessingBot(Bot):
         try:
             # Check if the message contains a photo
             if not self.is_current_msg_photo(msg):
-                self.send_text(msg['chat']['id'], 'Please send a photo with a caption for processing.')
+                self.send_text(msg['chat']['id'], 'Please send a photo with a caption for processing we needed to test.')
                 return
 
             # Download the user's photo
