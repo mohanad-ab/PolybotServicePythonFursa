@@ -1,0 +1,15 @@
+[Unit]
+Description=Polybot Service (prod)
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/PolybotServicePythonFursa/polybot
+Environment="TELEGRAM_TOKEN=7030169999:7414467331:AAH8lGWbzhg3A4JrCbmUBKFIaKmVNWrk7hQ"
+Environment="TELEGRAM_APP_URL=https://prod-bot.mohanadfursa.clicky"
+ExecStart=/home/ubuntu/PolybotServicePythonFursa/polybot/myenv/bin/python3 /home/ubuntu/PolybotServicePythonFursa/polybot/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

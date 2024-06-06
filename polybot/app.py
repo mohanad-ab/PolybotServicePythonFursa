@@ -22,8 +22,9 @@ def webhook():
 
 
 if __name__ == "__main__":
+    #adding this so that i can see the tests there might be a problem i cant pus any more 
     #bot = Bot(TELEGRAM_TOKEN, TELEGRAM_APP_URL)
     #bot = QuoteBot(TELEGRAM_TOKEN, TELEGRAM_APP_URL)
     bot = ImageProcessingBot(TELEGRAM_TOKEN, TELEGRAM_APP_URL)
 
-    app.run(host='0.0.0.0', port=8443)
+    app.run(host='0.0.0.0', port=8443,ssl_context=('/home/ubuntu/YOURPUBLIC.pem','/home/ubuntu/YOURPRIVATE.key'))
