@@ -3,7 +3,7 @@ from loguru import logger
 import os
 import time
 from telebot.types import InputFile
-from polybot.img_proc import Img
+from img_proc import Img
 
 
 class Bot:
@@ -18,7 +18,7 @@ class Bot:
         time.sleep(0.5)
 
         # set the webhook URL
-        self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
+        self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60 , certificate=open('/home/ubuntu/YOURPUBLIC.pem', 'r'))
 
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
@@ -33,7 +33,7 @@ class Bot:
 
     def download_user_photo(self, msg):
         """
-        Downloads the photos that sent to the Bot to `photos` directory (should be existed)
+        Downloads the photos that sent to the Bot to photos directory (should be existed)
         :return:
         """
         if not self.is_current_msg_photo(msg):
@@ -69,9 +69,11 @@ class Bot:
 class QuoteBot(Bot):
     def handle_message(self, msg):
         logger.info(f'Incoming message: {msg}')
-
-        if msg["text"] != 'Please don\'t quote me':
+        # the back slash was making confusions so i removed it
+        if msg["text"] != 'Please dont do that':
             self.send_text_with_quote(msg['chat']['id'], msg["text"], quoted_msg_id=msg["message_id"])
+        else:
+            self.send_text(msg['chat']['id'], 'I am so sorry!!')
 
 
 class ImageProcessingBot(Bot):
@@ -118,8 +120,7 @@ class ImageProcessingBot(Bot):
                 self.concat_state[user_id] = img_path
                 return
             else:
-                self.send_text(msg['chat']['id'],
-                               'Unsupported caption. Please use one of: Blur, Contour, Rotate, Segment, Salt and pepper, Concat.')
+                self.send_text(msg['chat']['id'], 'Unsupported caption. Please use one of: Blur, Contour, Rotate, Segment, Salt and pepper, Concat.')
                 return
 
             # Save the processed image
@@ -147,5 +148,3 @@ class ImageProcessingBot(Bot):
         except Exception as e:
             logger.error(f"Error concatenating images: {e}")
             self.send_text(user_id, "Something went wrong while concatenating images... please try again.")
-
-
